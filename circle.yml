@@ -1,0 +1,11 @@
+machine:
+  environment:
+    ARTEFACT_PATH: ${HOME}/${CIRCLE_PROJECT_REPONAME}
+    
+general:
+  artifacts:
+    - "target/artifacts.zip"
+
+test:
+  post:
+    - npm run riffraff-artefact

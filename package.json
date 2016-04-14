@@ -1,0 +1,8 @@
+{
+  "name": "composer-tracker-lamdas",
+  "dependencies": {
+    "aws-sdk": "^2.3.3",
+    "node-riffraff-artefact": "^1.3.2"
+  },
+  "description": "A lambda function to add published items with tracker information to a DynamoDB"
+}

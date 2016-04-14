@@ -1,0 +1,71 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Lambda functions to populate the Tracker Store",
+  "Parameters": {
+
+  },
+  "Resources": {
+    "TrackerDataStoreRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version" : "2012-10-17",
+          "Statement": [ {
+            "Effect": "Allow",
+            "Principal": {
+              "Service": [ "lambda.amazonaws.com" ]
+            },
+            "Action": [ "sts:AssumeRole" ]
+            } ]
+          },
+          "Path": "/",
+          "Policies": [ {
+            "PolicyName": "TrackerDataStorePolicy",
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "logs:CreateLogGroup",
+                    "logs:CreateLogStream",
+                    "logs:PutLogEvents"
+                  ],
+                  "Resource": "*"
+                }
+              ]
+            }
+            } ]
+          }
+        },
+        "TrackerDataStoreAddDataLambdas": {
+          "Type" : "AWS::Lambda::Function",
+          "Properties" : {
+            "Code" : {
+              "S3Bucket" : "lambda-dist-cross-stream",
+              "S3Key" : { "Fn::Join": [ "/", [ "composer-tracker-store", "composerTrackerStoreAdd.zip" ] ]}
+            },
+            "Description" : "A lambda function to listen to publish events and save to DynamoDB",
+            "Handler" : "index.handler",
+            "MemorySize" : 128,
+            "Role" : { "Fn::GetAtt" : [ "TrackerDataStoreRole", "Arn" ] },
+            "Runtime" : "nodejs4.3",
+            "Timeout" : 120
+          }
+        },
+        "TrackerDataStoreUpdateSnapshots": {
+          "Type" : "AWS::Lambda::Function",
+          "Properties" : {
+            "Code" : {
+              "S3Bucket" : "lambda-dist-cross-stream",
+              "S3Key" : { "Fn::Join": [ "/", [ "composer-tracker-store", "composerTrackerUpdateSnapshots.zip" ] ]}
+            },
+            "Description" : "A lambda function to periodically check for new snapshots",
+            "Handler" : "index.handler",
+            "MemorySize" : 128,
+            "Role" : { "Fn::GetAtt" : [ "TrackerDataStoreRole", "Arn" ] },
+            "Runtime" : "nodejs4.3",
+            "Timeout" : 120
+          }
+        }
+      }
+    }
