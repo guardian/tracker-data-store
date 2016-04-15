@@ -2,7 +2,13 @@
   "name": "composer-tracker-lamdas",
   "dependencies": {
     "aws-sdk": "^2.3.3",
-    "node-riffraff-artefact": "^1.3.2"
+    "node-riffraff-artefact": "^1.3.2",
+    "thrift": "^0.9.3"
+  },
+  "scripts": {
+    "thrift-event": "thrift --gen js:node -out ./tracker-add-item/thrift/generated ./tracker-add-item/thrift/event.thrift",
+    "thrift-content": "thrift --gen js:node -out ./tracker-add-item/thrift/generated ./tracker-add-item/thrift/content.thrift",
+    "thrift": "npm run thrift-event && npm run thrift-content"
   },
   "description": "A lambda function to add published items with tracker information to a DynamoDB"
 }
