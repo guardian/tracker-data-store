@@ -10,15 +10,18 @@ const dynamoTableName = "tracker-data-store-PROD";
 function findContentToSnapshot(callback) {
 
   var params = {
-    TableName : dynamoTableName,
-    KeyConditionExpression: "nextSnapshotDate < :timeNowInMilliseconds",
+    TableName: dynamoTableName,
+    ExpressionAttributeNames:{
+        "#path": "path"
+    },
+    ProjectionExpression: "#path, nextSnapshotDate",
+    FilterExpression: "nextSnapshotDate < :timeNowInMilliseconds",
     ExpressionAttributeValues: {
         ":timeNowInMilliseconds": Date.now()
     },
-    IndexName: "nextSnapshotDate-index"
   };
 
-  dynamodbClient.query(params, callback);
+  dynamodbClient.scan(params, callback);
 
 };
 
