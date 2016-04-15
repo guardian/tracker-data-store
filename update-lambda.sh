@@ -20,6 +20,5 @@ aws s3 cp composerTrackerUpdateSnapshots.zip s3://lambda-dist-cross-stream/compo
 aws lambda update-function-code --function-name TrackerDataStore-TrackerDataStoreAddDataLambdas-124JIJJ7ARUU9 --s3-bucket lambda-dist-cross-stream --s3-key composer-tracker-store/composerTrackerStoreAdd.zip --profile composer
 aws lambda update-function-code --function-name TrackerDataStore-TrackerDataStoreUpdateSnapshots-E7DDRJ5YCIED --s3-bucket lambda-dist-cross-stream --s3-key composer-tracker-store/composerTrackerUpdateSnapshots.zip --profile composer
 
-
 rm composerTrackerStoreAdd.zip
 rm composerTrackerUpdateSnapshots.zip

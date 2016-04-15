@@ -31,6 +31,22 @@
                     "logs:PutLogEvents"
                   ],
                   "Resource": "*"
+                },
+                {
+                  "Resource": [
+                    "arn:aws:kinesis:*:*:stream/flexible-content-stream-live-CODE"
+                  ],
+                  "Action": [
+                    "kinesis:Get*",
+                    "kinesis:DescribeStream",
+                    "kinesis:ListStreams"
+                  ],
+                  "Effect": "Allow"
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [ "dynamodb:*" ],
+                  "Resource": "*"
                 }
               ]
             }
