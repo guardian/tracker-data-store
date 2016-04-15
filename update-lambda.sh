@@ -6,7 +6,7 @@ cp -R node_modules tracker-add-item/node_modules
 cp -R node_modules tracker-update-snapshots/node_modules
 
 cd tracker-add-item
-zip -r -q ../composerTrackerStoreAdd.zip index.js node_modules/ package.json
+zip -r -q ../composerTrackerStoreAdd.zip thrift/ index.js node_modules/ package.json
 cd ../tracker-update-snapshots
 zip -r -q ../composerTrackerUpdateSnapshots.zip index.js node_modules/ package.json
 cd ..

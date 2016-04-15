@@ -34,7 +34,7 @@
                 },
                 {
                   "Resource": [
-                    "arn:aws:kinesis:*:*:stream/flexible-content-stream-live-CODE"
+                    "arn:aws:kinesis:*:*:stream/flexible-content-stream-live-PROD"
                   ],
                   "Action": [
                     "kinesis:Get*",
