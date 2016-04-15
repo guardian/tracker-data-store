@@ -11,7 +11,7 @@ AWS.config.update({
 
 const dynamodbClient = new AWS.DynamoDB.DocumentClient();
 
-const dynamoTableName = "tracker-data-store-DEV";
+const dynamoTableName = "tracker-data-store-PROD";
 
 function deserialiseKinesisRecord(record) {
   const recordDataWithSettingsBit = new Buffer(record.kinesis.data, 'base64');
@@ -34,7 +34,7 @@ function isUpdateEvent(eventRecord) {
 };
 
 function isPublishedContent(contentRecord) {
-  return contentRecord.published;
+  return contentRecord.published && contentRecord.contentChangeDetails.published;
 }
 
 function insertIntoDynamo(contentRecord) {
