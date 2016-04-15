@@ -33,8 +33,16 @@ function isUpdateEvent(eventRecord) {
   return eventRecord.eventType === 1;
 };
 
-function isPublishedContent(contentRecord) {
-  return contentRecord.published && contentRecord.contentChangeDetails.published;
+function isRecentlyPublishedContent(contentRecord) {
+  var isPublished = contentRecord.published;
+  var publishedDate = contentRecord.contentChangeDetails.published
+  return isPublished && publishedDate && isPublishedInLastWeek(publishedDate);
+}
+
+function isPublishedInLastWeek(publishedDate) {
+  var oneWeekInMilliseconds = 1000 * 60 * 60 * 24 * 7;
+  var dateOneWeekAgo = Date().now - oneWeekInMilliseconds;
+  return publishedDate >= dateOneWeekAgo;
 }
 
 function insertIntoDynamo(contentRecord) {
@@ -88,6 +96,6 @@ exports.handler = function(event, context) {
     .map(deserialiseKinesisRecord)
     .filter(isUpdateEvent)
     .map((updateEvent) => updateEvent.content)
-    .filter(isPublishedContent)
+    .filter(isRecentlyPublishedContent)
     .forEach(insertIntoDynamo)
 }
