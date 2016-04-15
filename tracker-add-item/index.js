@@ -61,10 +61,15 @@ function insertIntoDynamo(contentRecord) {
       return;
     }
 
+    var publishedDate = contentRecord.contentChangeDetails.published.date.toNumber();
+    var twentyFourHoursInMilliseconds = 1000 * 60 * 60 * 24;
     var params = {
         TableName: dynamoTableName,
         Item:{
             "path": contentRecord.identifiers.path,
+            "title": contentRecord.fields.headline,
+            "publishedDate": publishedDate,
+            "nextSnapshotDate" : publishedDate + twentyFourHoursInMilliseconds
         }
     };
 
