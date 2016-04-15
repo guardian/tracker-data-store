@@ -13,6 +13,15 @@ const dynamodbClient = new AWS.DynamoDB.DocumentClient();
 
 const dynamoTableName = "tracker-data-store-PROD";
 
+const commissioningDesks = [
+  "tracking/commissioningdesk/uk-culture",
+  "tracking/commissioningdesk/uk-environment",
+  "tracking/commissioningdesk/uk-g2-features",
+  "tracking/commissioningdesk/uk-media",
+  "tracking/commissioningdesk/uk-opinion",
+  "tracking/commissioningdesk/uk-science",
+  "tracking/commissioningdesk/uk-travel"];
+
 function deserialiseKinesisRecord(record) {
   const recordDataWithSettingsBit = new Buffer(record.kinesis.data, 'base64');
   const recordData = recordDataWithSettingsBit.slice(1);
@@ -43,6 +52,21 @@ function isPublishedInLastWeek(publishedDate) {
   var oneWeekInMilliseconds = 1000 * 60 * 60 * 24 * 7;
   var dateOneWeekAgo = Date().now - oneWeekInMilliseconds;
   return publishedDate >= dateOneWeekAgo;
+}
+
+function CommisioningDeskFilter(content) {
+  var tags = content.taxonomy.tags;
+  for (var i = 0; i < tags.length; i++) {
+    var commissioningDesk = tags[i].tag.path;
+    if(isCommisioningDeskOfInterest(commissioningDesk)) {
+      return true;
+    }
+  }
+  return false;
+};
+
+function isCommisioningDeskOfInterest(tag) {
+  return commissioningDesks.indexOf(tag) > -1;
 }
 
 function insertIntoDynamo(contentRecord) {
@@ -92,10 +116,12 @@ function insertIntoDynamo(contentRecord) {
 };
 
 exports.handler = function(event, context) {
-  const validContent = event.Records
+  console.log("started");
+  event.Records
     .map(deserialiseKinesisRecord)
     .filter(isUpdateEvent)
     .map((updateEvent) => updateEvent.content)
     .filter(isRecentlyPublishedContent)
+    .filter(isCommisioningDeskOfInterest)
     .forEach(insertIntoDynamo)
 }
