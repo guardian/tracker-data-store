@@ -11,10 +11,6 @@ function findContentToSnapshot(callback) {
 
   var params = {
     TableName: dynamoTableName,
-    ExpressionAttributeNames:{
-        "#path": "path"
-    },
-    ProjectionExpression: "#path, nextSnapshotDate",
     FilterExpression: "nextSnapshotDate < :timeNowInMilliseconds",
     ExpressionAttributeValues: {
         ":timeNowInMilliseconds": Date.now()
@@ -22,8 +18,59 @@ function findContentToSnapshot(callback) {
   };
 
   dynamodbClient.scan(params, callback);
-
 };
+
+function trackerStatsRequest(item) {
+  return new Promise((resolve, reject) => {
+    resolve({
+      pageViews: 2000,
+      uniqueVisitors: 1000,
+      returningVisitors: 100
+    });
+  });
+}
+
+function addSnapshotToArray(statsSnapshot, item) {
+
+  const snapshot = {
+    time: item.nextSnapshotDate,
+    value: statsSnapshot
+  }
+
+  return item.Snapshots ? item.snapshots.concat(snapshot) : [snapshot];
+
+}
+
+function saveItem(item) {
+  var params = {
+      TableName: dynamoTableName,
+      Item: item
+  };
+
+  dynamodbClient.put(params, function(err, data) {
+    if (err) {
+        console.error("Unable to update item. Error JSON:", JSON.stringify(err, null, 2));
+    } else {
+        console.log("Added item:", JSON.stringify(data, null, 2));
+    }
+  })
+}
+
+function addSnapshotToItem(item) {
+  console.log(item);
+
+  trackerStatsRequest(item)
+    .then((statssnapshot) => {
+      return Promise.resolve(addSnapshotToArray(statssnapshot, item));
+    })
+    .then((snapshotArray) => {
+      item.snapshots = snapshotArray;
+      saveItem(item);
+    })
+    .catch((err) => {
+      console.log(err)
+    });
+}
 
 exports.handler = function(event, context) {
   findContentToSnapshot((err, data) => {
@@ -31,7 +78,8 @@ exports.handler = function(event, context) {
       console.error("Unable to retrive data from DynamoDB:", JSON.stringify(err, null, 2));
       return;
     }
-    console.log("Got some content that needs to be snapshotted", data);
-  })
-  console.log("This is the part where I update a snapshot");
+
+    data.Items.forEach(addSnapshotToItem);
+
+  });
 }
