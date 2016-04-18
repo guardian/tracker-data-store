@@ -5,7 +5,8 @@
     "node-riffraff-artefact": "^1.3.2",
     "pako": "^1.0.1",
     "reqwest": "^2.0.5",
-    "thrift": "^0.9.3"
+    "thrift": "^0.9.3",
+    "xhr2": "^0.1.3"
   },
   "scripts": {
     "thrift-event": "thrift --gen js:node -out ./tracker-add-item/thrift/generated ./tracker-add-item/thrift/event.thrift",
