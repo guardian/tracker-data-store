@@ -98,7 +98,8 @@ function insertIntoDynamo(contentRecord) {
             "path": contentRecord.identifiers.path,
             "title": contentRecord.fields.headline,
             "publishedDate": publishedDate,
-            "nextSnapshotDate" : publishedDate + twentyFourHoursInMilliseconds
+            "nextSnapshotDate" : publishedDate + twentyFourHoursInMilliseconds,
+            "composerId": contentRecord.id
         }
     };
 
