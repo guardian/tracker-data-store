@@ -48,18 +48,21 @@ function isRecentlyPublishedContent(contentRecord) {
   }
 
   var publishedDate = contentRecord.contentChangeDetails.published.date.toNumber()
+
   return isPublishedInLastWeek(publishedDate);
 }
 
 function isPublishedInLastWeek(publishedDate) {
   var oneWeekInMilliseconds = 1000 * 60 * 60 * 24 * 7;
   var dateOneWeekAgo = Date.now() - oneWeekInMilliseconds;
+
   return publishedDate >= dateOneWeekAgo;
 }
 
 function isCommissioningDeskOfInterest(content) {
-  return content.taxonomy.tags.some((tag) => {
-    return tag.path && commissioningDesks.includes(tag.path);
+
+  return result = content.taxonomy.tags.some((tagUsage) => {
+    return tagUsage.tag.path && commissioningDesks.indexOf(tagUsage.tag.path) !== -1;
   });
 };
 
