@@ -43,8 +43,11 @@ function isUpdateEvent(eventRecord) {
 };
 
 function isRecentlyPublishedContent(contentRecord) {
-  var isPublished = contentRecord.published;
-  var publishedDate = contentRecord.contentChangeDetails.published
+  if (!contentRecord.contentChangeDetails.published) {
+    return false;
+  }
+
+  var publishedDate = contentRecord.contentChangeDetails.published.date.toNumber()
   return isPublished && publishedDate && isPublishedInLastWeek(publishedDate);
 }
 
