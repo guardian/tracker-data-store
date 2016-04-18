@@ -37,8 +37,7 @@ function addSnapshotToArray(statsSnapshot, item) {
     value: statsSnapshot
   }
 
-  return item.Snapshots ? item.snapshots.concat(snapshot) : [snapshot];
-
+  return item.snapshots ? item.snapshots.concat(snapshot) : [snapshot];
 }
 
 function saveItem(item) {
@@ -56,18 +55,45 @@ function saveItem(item) {
   })
 }
 
-function addSnapshotToItem(item) {
-  console.log(item);
+function calculateNextSnapshotDate(publishedTime, currentSnapshot) {
+  const ageOfCurrentSnapshot = currentSnapshot - publishedTime;
+  const oneDayInMs = 1000 * 60 * 60 * 24;
+  const oneWeekInMs = oneDayInMs * 7;
+  const oneMonthInMs = oneDayInMs * 31;
 
+  if (ageOfCurrentSnapshot < ((2 * oneWeekInMs) - oneDayInMs + 1000)) { // up to 13 days old (Ophan current range)
+    return currentSnapshot + oneDayInMs;
+  }
+
+  if (ageOfCurrentSnapshot < (oneMonthInMs - oneWeekInMs + 1000)) { // up to 30 days old
+    return currentSnapshot + oneWeekInMs;
+  }
+
+  return currentSnapshot + oneMonthInMs;
+}
+
+function updateSnapshotDates(oldItem) {
+  const lastSnapshotDate = oldItem.nextSnapshotDate;
+  const nextSnapshotDate = calculateNextSnapshotDate(oldItem.publishedDate, oldItem.nextSnapshotDate);
+
+  return Object.assign({}, oldItem, {
+    nextSnapshotDate: nextSnapshotDate,
+    lastSnapshotDate: lastSnapshotDate
+  });
+}
+
+function addSnapshotToItem(item) {
   trackerStatsRequest(item)
     .then((statssnapshot) => {
       return Promise.resolve(addSnapshotToArray(statssnapshot, item));
     })
     .then((snapshotArray) => {
       item.snapshots = snapshotArray;
-      saveItem(item);
+      const itemNewTimes = updateSnapshotDates(item)
+      saveItem(itemNewTimes);
     })
     .catch((err) => {
+      //TODO: Catch ophan no more data error and write no further snapshots;
       console.log(err)
     });
 }
