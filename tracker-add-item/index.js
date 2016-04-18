@@ -48,7 +48,7 @@ function isRecentlyPublishedContent(contentRecord) {
   }
 
   var publishedDate = contentRecord.contentChangeDetails.published.date.toNumber()
-  return isPublished && publishedDate && isPublishedInLastWeek(publishedDate);
+  return isPublishedInLastWeek(publishedDate);
 }
 
 function isPublishedInLastWeek(publishedDate) {
