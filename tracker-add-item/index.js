@@ -62,7 +62,7 @@ function isPublishedInLastWeek(publishedDate) {
 function getCommissioningDesks(content) {
   return content.taxonomy.tags.filter((tagUsage) => {
     return tagUsage.tag.path && commissioningDesks.indexOf(tagUsage.tag.path) !== -1;
-  }).map((tagUsage) => tag.tag.path);
+  }).map((tagUsage) => tagUsage.tag.path);
 }
 
 function isCommissioningDeskOfInterest(content) {
