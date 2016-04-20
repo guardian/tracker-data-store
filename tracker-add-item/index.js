@@ -103,7 +103,7 @@ function insertIntoDynamo(contentRecord) {
             "publishedDate": publishedDate,
             "nextSnapshotDate" : publishedDate + twentyFourHoursInMilliseconds,
             "composerId": contentRecord.id,
-            "commissioningDesks": getCommissioningDesks(content)
+            "commissioningDesks": getCommissioningDesks(contentRecord)
         }
     };
 
