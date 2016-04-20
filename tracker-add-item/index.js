@@ -59,11 +59,14 @@ function isPublishedInLastWeek(publishedDate) {
   return publishedDate >= dateOneWeekAgo;
 }
 
-function isCommissioningDeskOfInterest(content) {
-
-  return result = content.taxonomy.tags.some((tagUsage) => {
+function getCommissioningDesks(content) {
+  return content.taxonomy.tags.filter((tagUsage) => {
     return tagUsage.tag.path && commissioningDesks.indexOf(tagUsage.tag.path) !== -1;
-  });
+  }).map((tagUsage) => tag.tag.path);
+}
+
+function isCommissioningDeskOfInterest(content) {
+  return !!getCommissioningDesks(content).length
 };
 
 function insertIntoDynamo(contentRecord) {
@@ -99,7 +102,8 @@ function insertIntoDynamo(contentRecord) {
             "title": contentRecord.fields.headline,
             "publishedDate": publishedDate,
             "nextSnapshotDate" : publishedDate + twentyFourHoursInMilliseconds,
-            "composerId": contentRecord.id
+            "composerId": contentRecord.id,
+            "commissioningDesks": getCommissioningDesks(content)
         }
     };
 
