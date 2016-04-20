@@ -69,7 +69,7 @@ function addSnapshotToItem(item) {
     })
     .catch((err) => {
       //TODO: Catch ophan no more data error and write no further snapshots;
-      console.log(err)
+      console.log("Error fetching snapshot", err);
     });
 }
 
@@ -94,7 +94,7 @@ function addTrackerDataToItem(item) {
       saveItem(newItem);
     })
     .catch((err) => {
-      console.log(err);
+      console.log("Error fetching full tracker information", err);
     })
 }
 
