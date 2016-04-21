@@ -69,7 +69,7 @@ function addSnapshotToItem(item) {
     })
     .catch((err) => {
       //TODO: Catch ophan no more data error and write no further snapshots;
-      console.log("Error fetching snapshot", err);
+      console.log("Error fetching snapshot", err)
     });
 }
 

@@ -2,7 +2,11 @@
   "AWSTemplateFormatVersion": "2010-09-09",
   "Description": "Lambda functions to populate the Tracker Store",
   "Parameters": {
-
+    "VpcId": {
+        "Description": "ID of the VPC onto which to launch the application eg. vpc-1234abcd",
+        "Type": "AWS::EC2::VPC::Id",
+        "Default": "vpc-381fa95d"
+    }
   },
   "Resources": {
     "TrackerDataStoreRole": {
@@ -33,6 +37,15 @@
                   "Resource": "*"
                 },
                 {
+                  "Effect": "Allow",
+                  "Action": [
+                    "ec2:CreateNetworkInterface",
+                    "ec2:DescribeNetworkInterfaces",
+                    "ec2:DeleteNetworkInterface"
+                  ],
+                  "Resource": "*"
+                },
+                {
                   "Resource": [
                     "arn:aws:kinesis:*:*:stream/flexible-content-stream-live-*"
                   ],
@@ -52,6 +65,13 @@
             }
             } ]
           }
+        },
+        "TrackerDataLambdaSecurityGroup": {
+            "Type": "AWS::EC2::SecurityGroup",
+            "Properties" : {
+                "GroupDescription": "Lambda functions execute with this group",
+                "VpcId": {"Ref": "VpcId"}
+            }
         },
         "TrackerDataStoreAddDataLambdas": {
           "Type" : "AWS::Lambda::Function",
@@ -80,7 +100,15 @@
             "MemorySize" : 128,
             "Role" : { "Fn::GetAtt" : [ "TrackerDataStoreRole", "Arn" ] },
             "Runtime" : "nodejs4.3",
-            "Timeout" : 120
+            "Timeout" : 120,
+            "VpcConfig": {
+              "SecurityGroupIds" : [  {"Ref": "TrackerDataLambdaSecurityGroup"}],
+              "SubnetIds" : [
+                "subnet-c2620fa7",
+                "subnet-2a37bd5d",
+                "subnet-2967c870"
+              ]
+            }
           }
         }
       }

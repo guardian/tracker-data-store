@@ -1,24 +1,28 @@
 const reqwest = require('reqwest');
+const moment = require('moment');
 
 const trackerRoot = "https://tracker.gutools.co.uk";
 
+
+function unixToUtc(unixTime) {
+  return moment(unixTime).toISOString();
+}
+
 module.exports = {
   fetchStats: (path, fromDate, toDate) => {
-    // return reqwest({
-    //   url: trackerRoot + "/dynamicStatsPath",
-    //   data: {
-    //     path: path,
-    //     fromDate: fromDate,
-    //     toDate: toDate
-    //   }
-    // });
+
     return new Promise((resolve, reject) => {
-        resolve({
-          pageViews: 2000,
-          uniqueVisitors: 1000,
-          returningVisitors: 100
-        });
+      reqwest({
+        url: trackerRoot + "/ophan-info",
+        data: {
+          capiId: "/" + path,
+          from: unixToUtc(fromDate),
+          to: unixToUtc(toDate)
+        },
+        success: resolve,
+        error: reject
       });
+    });
   },
 
   fetchFullTrackerData: (composerId) => {
@@ -26,9 +30,12 @@ module.exports = {
     if (!composerId) {
       return Promise.reject("No composer ID passed");
     }
-
-    return reqwest({
-      url: trackerRoot + "/capi-flex/" + composerId
+    return new Promise((resolve, reject) => {
+      reqwest({
+        url: trackerRoot + "/capi-flex/" + composerId,
+        success: resolve,
+        error: reject
+      });
     });
   }
 }
