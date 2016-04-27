@@ -13,14 +13,7 @@ const dynamodbClient = new AWS.DynamoDB.DocumentClient();
 
 const dynamoTableName = "tracker-data-store-PROD";
 
-const commissioningDesks = [
-  "tracking/commissioningdesk/uk-culture",
-  "tracking/commissioningdesk/uk-environment",
-  "tracking/commissioningdesk/uk-g2-features",
-  "tracking/commissioningdesk/uk-media",
-  "tracking/commissioningdesk/uk-opinion",
-  "tracking/commissioningdesk/uk-science",
-  "tracking/commissioningdesk/uk-travel"];
+const commissioningDeskRegex = /^tracking\/commissioningdesk\/uk-(.*)/
 
 function deserialiseKinesisRecord(record) {
   const recordDataWithSettingsBit = new Buffer(record.kinesis.data, 'base64');
@@ -61,7 +54,7 @@ function isPublishedInLastWeek(publishedDate) {
 
 function getCommissioningDesks(content) {
   return content.taxonomy.tags.filter((tagUsage) => {
-    return tagUsage.tag.path && commissioningDesks.indexOf(tagUsage.tag.path) !== -1;
+    return tagUsage.tag.path && commissioningDeskRegex.test(tagUsage.tag.path)
   }).map((tagUsage) => tagUsage.tag.path);
 }
 
