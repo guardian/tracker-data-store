@@ -28,7 +28,7 @@ function findContentToSnapshot(callback, content, startKey) {
   }
 
   dynamodbClient.scan(params, (err, data) => {
-    const newContent = content ? content.concat([data.Items]) : data.Items;
+    const newContent = content ? content.concat(data.Items) : data.Items;
     if (data.LastEvaluatedKey) {
       findContentToAddTrackerInformation(callback, data.Items, data.LastEvaluatedKey)
     } else {
@@ -132,7 +132,7 @@ function findContentToAddTrackerInformation(callback, content, startKey) {
   }
 
   dynamodbClient.scan(params, (err, data) => {
-    const newContent = content ? content.concat([data.Items]) : data.Items;
+    const newContent = content ? content.concat(data.Items) : data.Items;
     if (data.LastEvaluatedKey) {
       findContentToAddTrackerInformation(callback, data.Items, data.LastEvaluatedKey)
     } else {
