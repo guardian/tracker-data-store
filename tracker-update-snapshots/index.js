@@ -10,7 +10,7 @@ const dynamoTableName = "tracker-data-store-PROD";
 const oneDayInMs = 1000 * 60 * 60 * 24;
 const oneWeekInMs = oneDayInMs * 7;
 
-function findContentToSnapshot(callback) {
+function findContentToSnapshot(callback, content, startKey) {
 
   var params = {
     TableName: dynamoTableName,
@@ -22,7 +22,19 @@ function findContentToSnapshot(callback) {
     },
   };
 
-  dynamodbClient.scan(params, callback);
+
+  if (startKey) {
+    params['ExclusiveStartKey'] = startKey;
+  }
+
+  dynamodbClient.scan(params, (err, data) => {
+    const newContent = content ? content.concat([data.Items]) : data.Items;
+    if (data.LastEvaluatedKey) {
+      findContentToAddTrackerInformation(callback, data.Items, data.LastEvaluatedKey)
+    } else {
+      callback(err, newContent)
+    }
+  });
 };
 
 function buildSnapshot(statsSnapshot, item) {
@@ -108,19 +120,32 @@ function addSnapshotToItem(item) {
 }
 
 
-function findContentToAddTrackerInformation(callback) {
+function findContentToAddTrackerInformation(callback, content, startKey) {
 
   var params = {
     TableName: dynamoTableName,
     FilterExpression: "attribute_not_exists(trackerData)"
   };
 
-  dynamodbClient.scan(params, callback);
+  if (startKey) {
+    params['ExclusiveStartKey'] = startKey;
+  }
+
+  dynamodbClient.scan(params, (err, data) => {
+    const newContent = content ? content.concat([data.Items]) : data.Items;
+    if (data.LastEvaluatedKey) {
+      findContentToAddTrackerInformation(callback, data.Items, data.LastEvaluatedKey)
+    } else {
+      callback(err, newContent)
+    }
+  });
 };
 
 function addTrackerDataToItem(item) {
+  console.log("fetching tracker data for " + item.path)
   trackerApi.fetchFullTrackerData(item.composerId)
     .then((trackerData) => {
+      console.log("fetched tracker data for " + item.path)
       const newItem = Object.assign({}, item, {
         trackerData: trackerData
       });
@@ -148,23 +173,28 @@ function findContentToCleanUp(callback) {
 exports.handler = function(event, context) {
 
   findContentToCleanUp((err, data) => {
-    data.Items.forEach(deleteItem);
+    if (data && data.Items) {
+      data.Items.forEach(deleteItem);
+    }
   });
 
-  findContentToSnapshot((err, data) => {
+  findContentToSnapshot((err, content) => {
     if(err) {
       console.error("Unable to content awaiting snapshot data from DynamoDB:", JSON.stringify(err, null, 2));
       return;
     }
-    data.Items.forEach(addSnapshotToItem);
+
+    console.log("Found " + content.length + "pieces of content needing snapshots")
+    content.slice(0,20).forEach(addSnapshotToItem);
   });
 
-  findContentToAddTrackerInformation((err, data) => {
+  findContentToAddTrackerInformation((err, content) => {
     if(err) {
       console.error("Unable to find content to add to tracker data from DynamoDB:", JSON.stringify(err, null, 2));
       return;
     }
+    console.log("Found " + content.length + "pieces of content needing tracker information")
 
-    data.Items.forEach(addTrackerDataToItem);
+    content.slice(0,20).forEach(addTrackerDataToItem);
   })
 }

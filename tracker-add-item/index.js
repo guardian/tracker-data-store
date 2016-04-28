@@ -14,6 +14,53 @@ const dynamodbClient = new AWS.DynamoDB.DocumentClient();
 const dynamoTableName = "tracker-data-store-PROD";
 
 const commissioningDeskRegex = /^tracking\/commissioningdesk\/uk-(.*)/
+const whitelistedCommissioningDesks = [
+  'tracking/commissioningdesk/uk-audio',
+  'tracking/commissioningdesk/uk-business',
+  'tracking/commissioningdesk/cities',
+  'tracking/commissioningdesk/uk-communities-and-social',
+  'tracking/commissioningdesk/cook',
+  'tracking/commissioningdesk/crosswords',
+  'tracking/commissioningdesk/uk-culture',
+  'tracking/commissioningdesk/digital-backbench',
+  'tracking/commissioningdesk/uk-education',
+  'tracking/commissioningdesk/uk-environment',
+  'tracking/commissioningdesk/family',
+  'tracking/commissioningdesk/uk-fashion',
+  'tracking/commissioningdesk/uk-foreign',
+  'tracking/commissioningdesk/foreign-networks',
+  'tracking/commissioningdesk/g1',
+  'tracking/commissioningdesk/uk-g2-features',
+  'tracking/commissioningdesk/global-development',
+  'tracking/commissioningdesk/uk-guardian-weekly-commissioning',
+  'tracking/commissioningdesk/uk-home-news',
+  'tracking/commissioningdesk/uk-labs',
+  'tracking/commissioningdesk/uk-letters-and-leader-writers',
+  'tracking/commissioningdesk/long-read',
+  'tracking/commissioningdesk/uk-media',
+  'tracking/commissioningdesk/uk-membership',
+  'tracking/commissioningdesk/uk-money',
+  'tracking/commissioningdesk/uk-obituaries',
+  'tracking/commissioningdesk/uk-opinion',
+  'tracking/commissioningdesk/uk-pictures-guardian-arts',
+  'tracking/commissioningdesk/uk-pictures-guardian-features',
+  'tracking/commissioningdesk/uk-pictures-guardian-news',
+  'tracking/commissioningdesk/uk-professional-networks',
+  'tracking/commissioningdesk/research-and-information',
+  'tracking/commissioningdesk/review',
+  'tracking/commissioningdesk/guardian-saturday',
+  'tracking/commissioningdesk/uk-science',
+  'tracking/commissioningdesk/uk-society',
+  'tracking/commissioningdesk/uk-special-projects',
+  'tracking/commissioningdesk/uk-sport',
+  'tracking/commissioningdesk/uk-technology',
+  'tracking/commissioningdesk/the-guide',
+  'tracking/commissioningdesk/uk-travel',
+  'tracking/commissioningdesk/uk-video',
+  'tracking/commissioningdesk/uk-visuals',
+  'tracking/commissioningdesk/uk-weather',
+  'tracking/commissioningdesk/weekend'
+]
 
 function deserialiseKinesisRecord(record) {
   const recordDataWithSettingsBit = new Buffer(record.kinesis.data, 'base64');
@@ -54,7 +101,7 @@ function isPublishedInLastWeek(publishedDate) {
 
 function getCommissioningDesks(content) {
   return content.taxonomy.tags.filter((tagUsage) => {
-    return tagUsage.tag.path && commissioningDeskRegex.test(tagUsage.tag.path)
+    return tagUsage.tag.path && whitelistedCommissioningDesks.indexOf(tagUsage.tag.path) !== -1
   }).map((tagUsage) => tagUsage.tag.path);
 }
 
