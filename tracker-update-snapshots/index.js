@@ -30,7 +30,7 @@ function findContentToSnapshot(callback, content, startKey) {
   dynamodbClient.scan(params, (err, data) => {
     const newContent = content ? content.concat(data.Items) : data.Items;
     if (data.LastEvaluatedKey) {
-      findContentToSnapshot(callback, data.Items, data.LastEvaluatedKey)
+      findContentToSnapshot(callback, newContent, data.LastEvaluatedKey)
     } else {
       callback(err, newContent)
     }
@@ -133,7 +133,7 @@ function findContentToAddTrackerInformation(callback, content, startKey) {
   dynamodbClient.scan(params, (err, data) => {
     const newContent = content ? content.concat(data.Items) : data.Items;
     if (data.LastEvaluatedKey) {
-      findContentToAddTrackerInformation(callback, data.Items, data.LastEvaluatedKey)
+      findContentToAddTrackerInformation(callback, newContent, data.LastEvaluatedKey)
     } else {
       callback(err, newContent)
     }
@@ -156,25 +156,34 @@ function addTrackerDataToItem(item) {
     })
 }
 
-function findContentToCleanUp(callback) {
+function findContentToCleanUp(callback, content, startKey) {
 
   var params = {
     TableName: dynamoTableName,
-    FilterExpression: "publishedDate < :timeConsideredOldInMilliseconds)",
+    FilterExpression: "publishedDate < :timeConsideredOldInMilliseconds",
     ExpressionAttributeValues: {
-        ":timeConsideredOldInMilliseconds": Date.now() - (5 * oneWeekInMs),
+        ":timeConsideredOldInMilliseconds": Date.now() - (5 * oneWeekInMs)
     }
   };
 
-  dynamodbClient.scan(params, callback);
+  if (startKey) {
+    params['ExclusiveStartKey'] = startKey;
+  }
+
+  dynamodbClient.scan(params, (err, data) => {
+    const newContent = content ? content.concat(data.Items) : data.Items;
+    if (data.LastEvaluatedKey) {
+      findContentToCleanUp(callback, newContent, data.LastEvaluatedKey)
+    } else {
+      callback(err, newContent)
+    }
+  });
 };
 
 exports.handler = function(event, context) {
 
-  findContentToCleanUp((err, data) => {
-    if (data && data.Items) {
-      data.Items.forEach(deleteItem);
-    }
+  findContentToCleanUp((err, content) => {
+    content.forEach(deleteItem);
   });
 
   findContentToSnapshot((err, content) => {
