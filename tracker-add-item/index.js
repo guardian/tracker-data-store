@@ -106,8 +106,12 @@ function getCommissioningDesks(content) {
 }
 
 function isCommissioningDeskOfInterest(content) {
-  return !!getCommissioningDesks(content).length
+  return !!getCommissioningDesks(content).length;
 };
+
+function hasNewspaperTags(content) {
+  return !!content.taxonomy.newspaper;
+}
 
 function insertIntoDynamo(contentRecord) {
 
@@ -143,7 +147,8 @@ function insertIntoDynamo(contentRecord) {
             "publishedDate": publishedDate,
             "nextSnapshotDate" : publishedDate + twentyFourHoursInMilliseconds,
             "composerId": contentRecord.id,
-            "commissioningDesks": getCommissioningDesks(contentRecord)
+            "commissioningDesks": getCommissioningDesks(contentRecord),
+            "inNewspaper": hasNewspaperTags(contentRecord)
         }
     };
 
