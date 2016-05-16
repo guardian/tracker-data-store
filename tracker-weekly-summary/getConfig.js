@@ -31,6 +31,4 @@ module.exports = function (key) {
             resolve(data.Item.value);
         });
     });
-
-
 }
