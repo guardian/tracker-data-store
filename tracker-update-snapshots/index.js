@@ -146,7 +146,8 @@ function addTrackerDataToItem(item) {
     .then((trackerData) => {
       console.log("fetched tracker data for " + item.path)
       const newItem = Object.assign({}, item, {
-        trackerData: trackerData
+        trackerData: trackerData,
+        inNewspaper: trackerData.inNewspaper
       });
 
       saveItem(newItem);
@@ -181,7 +182,7 @@ function findContentToCleanUp(callback, content, startKey) {
 };
 
 exports.handler = function(event, context) {
-
+  
   findContentToCleanUp((err, content) => {
     content.forEach(deleteItem);
   });
