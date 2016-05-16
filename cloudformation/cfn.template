@@ -110,6 +110,29 @@
               ]
             }
           }
+        },
+        "TrackerDataStoreWeeklySnapshot": {
+          "Type" : "AWS::Lambda::Function",
+          "Properties" : {
+            "Code" : {
+              "S3Bucket" : "lambda-dist-cross-stream",
+              "S3Key" : { "Fn::Join": [ "/", [ "composer-tracker-store", "composerTrackerWeeklySummary.zip" ] ]}
+            },
+            "Description" : "A lambda function to periodically gather weekly summaries",
+            "Handler" : "index.handler",
+            "MemorySize" : 128,
+            "Role" : { "Fn::GetAtt" : [ "TrackerDataStoreRole", "Arn" ] },
+            "Runtime" : "nodejs4.3",
+            "Timeout" : 120,
+            "VpcConfig": {
+              "SecurityGroupIds" : [  {"Ref": "TrackerDataLambdaSecurityGroup"}],
+              "SubnetIds" : [
+                "subnet-c2620fa7",
+                "subnet-2a37bd5d",
+                "subnet-2967c870"
+              ]
+            }
+          }
         }
       }
     }
