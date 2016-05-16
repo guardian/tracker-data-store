@@ -8,15 +8,21 @@ function unixToUtc(unixTime) {
 }
 
 module.exports = {
-  fetchWeeklyStats: (fromDate, toDate) => {
+  fetchWeeklyStatsForDesk: (desk, fromDate, toDate) => {
     return new Promise((resolve, reject) => {
       reqwest({
-        url: trackerRoot + "/weekly-summary",
+        url: trackerRoot + "/capi-count",
         data: {
           from: unixToUtc(fromDate),
-          to: unixToUtc(toDate)
+          to: unixToUtc(toDate),
+          desk: desk
         },
-        success: resolve,
+        success: function(data) {
+          resolve({
+            count: data,
+            desk: desk
+          });
+        },
         error: reject
       });
     });
