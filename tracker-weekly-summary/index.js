@@ -17,13 +17,13 @@ function fetchCountForCommissioningDesk(desk, fromDate, toDate) {
   return trackerApi.fetchWeeklyStatsForDesk(desk, fromDate, toDate)
 }
 
-function writeCommissioningSummaryToDynamo(deskSummary, fromDate) {
+function writeCommissioningSummaryToDynamo(deskName, count, fromDate) {
   var params = {
       TableName: dynamoTableName,
       Item: {
-        commissioningDesk: deskSummary.desk,
+        commissioningDesk: deskName,
         weekCommencing: fromDate,
-        count: deskSummary.count
+        count: parseInt(count, 10)
       }
   };
 
@@ -31,15 +31,23 @@ function writeCommissioningSummaryToDynamo(deskSummary, fromDate) {
     if (err) {
         console.error("Unable to add item. Error JSON:", JSON.stringify(err, null, 2));
     } else {
-        console.log("Added item: " + deskSummary.desk + " W/C:" + fromDate);
+        console.log("Added item: " + deskName + " W/C:" + fromDate);
     }
   })
+}
+
+function generateTrackedVirtualDesk(deskSummaries) {
+   return deskSummaries.reduce((currentCount, deskSummary) => currentCount + parseInt(deskSummary.count, 10), 0)
 }
 
 function writeCommissioningSummariesToDynamo(deskSummaries, fromDate) {
   console.log("Writing all summaries to DynamoDB")
   
-  deskSummaries.forEach((deskSummary) => writeCommissioningSummaryToDynamo(deskSummary, fromDate))
+  deskSummaries.forEach((deskSummary) => writeCommissioningSummaryToDynamo(deskSummary.desk, deskSummary.count, fromDate))
+  
+  //Write the virtual desk - all tracked
+  const trackedTotal = generateTrackedVirtualDesk(deskSummaries)
+  writeCommissioningSummaryToDynamo('virtual/commissioningdesk/all-tracked', trackedTotal, fromDate) 
 }
 
 exports.handler = function(event, context) {
@@ -56,4 +64,13 @@ exports.handler = function(event, context) {
     .catch((err) => {
       console.log(err)
     })
+    
+    
+  //Write the virtual desk - all
+  trackerApi.fetchWeeklyStatsForAll(fromDate, toDate)
+    .then((allCount) => {
+        writeCommissioningSummaryToDynamo('virtual/commissioningdesk/all', allCount, fromDate)
+    })
+    .catch((err) => console.log(err))
+
 }
