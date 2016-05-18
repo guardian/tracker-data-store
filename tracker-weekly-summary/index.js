@@ -50,11 +50,7 @@ function writeCommissioningSummariesToDynamo(deskSummaries, fromDate) {
   writeCommissioningSummaryToDynamo('virtual/commissioningdesk/all-tracked', trackedTotal, fromDate) 
 }
 
-exports.handler = function(event, context) {
-  
-  const fromDate = moment().subtract(7, 'days').startOf('isoweek').format('YYYY-MM-DD');
-  const toDate = moment().subtract(7, 'days').endOf('isoweek').format('YYYY-MM-DD');
-  
+function generateWeeklySummary(fromDate, toDate) {
   console.log("Fetching Weekly Summary between " + fromDate + " and " + toDate);
   
   getConfig('commissioningDesks')
@@ -73,4 +69,20 @@ exports.handler = function(event, context) {
     })
     .catch((err) => console.log(err))
 
+}
+
+exports.handler = function(event, context) {
+  
+  const fromDate = moment().subtract(7, 'days').startOf('isoweek').format('YYYY-MM-DD');
+  const toDate = moment().subtract(7, 'days').endOf('isoweek').format('YYYY-MM-DD');
+  
+  generateWeeklySummary(fromDate, toDate);
+
+}
+
+exports.backfill = function(fakeDate) {
+  const fromDate = moment(fakeDate).startOf('isoweek').format('YYYY-MM-DD');
+  const toDate = moment(fakeDate).endOf('isoweek').format('YYYY-MM-DD');
+
+  generateWeeklySummary(fromDate, toDate);
 }
