@@ -108,7 +108,7 @@ function insertIntoDynamo(contentRecord, interestingCommissioningDesks) {
       if (err) {
           console.error("Unable to add item. Error JSON:", JSON.stringify(err, null, 2));
       } else {
-          console.log("Added item:", contentRecord.identifiers.path);
+          console.log("Added item:" +  contentRecord.identifiers.path);
       }
     })
   })
