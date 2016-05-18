@@ -104,11 +104,11 @@ function insertIntoDynamo(contentRecord, interestingCommissioningDesks) {
         }
     };
 
-    dynamodbClient.put(params, function(err, data) {
+    dynamodbClient.put(params, function(err) {
       if (err) {
           console.error("Unable to add item. Error JSON:", JSON.stringify(err, null, 2));
       } else {
-          console.log("Added item:", JSON.stringify(data, null, 2));
+          console.log("Added item:", contentRecord.identifiers.path);
       }
     })
   })
