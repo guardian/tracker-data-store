@@ -65,7 +65,7 @@ function hasNewspaperTags(content) {
   return !!content.taxonomy.newspaper;
 }
 
-function insertIntoDynamo(contentRecord) {
+function insertIntoDynamo(contentRecord, interestingCommissioningDesks) {
 
   var params = {
     TableName : dynamoTableName,
@@ -99,7 +99,7 @@ function insertIntoDynamo(contentRecord) {
             "publishedDate": publishedDate,
             "nextSnapshotDate" : publishedDate + twentyFourHoursInMilliseconds,
             "composerId": contentRecord.id,
-            "commissioningDesks": getCommissioningDesks(contentRecord),
+            "commissioningDesks": getCommissioningDesks(contentRecord, interestingCommissioningDesks),
             "inNewspaper": hasNewspaperTags(contentRecord)
         }
     };
@@ -123,7 +123,7 @@ exports.handler = function(event, context) {
       .map((updateEvent) => updateEvent.content)
       .filter(isRecentlyPublishedContent)
       .filter((content) => isCommissioningDeskOfInterest(content, commissioningDesks))
-      .forEach(insertIntoDynamo)
-  }))
+      .forEach((content) => insertIntoDynamo(content, commissioningDesks))
+  }));
     
 }
