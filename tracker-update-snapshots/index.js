@@ -100,21 +100,34 @@ function addSnapshotToItem(item) {
   var st = snapshotType(item);
   var sd = snapshotDate(item.publishedDate, st);
   if (st) {
-  trackerApi.fetchStats(item.path, item.publishedDate, sd)
-    .then((statssnapshot) => {
-      return Promise.resolve(buildSnapshot(statssnapshot, item));
-    })
-    .then((snapshot) => {
-      if (st === '24hr') {
-        item.snapshot24Hours = snapshot;
-      } else if (st === 'week') {
-        item.snapshot7Days = snapshot;
-      }
-      saveItem(item);
-    })
-    .catch((err) => {
-      console.log("Error fetching snapshot", err)
-    });
+    trackerApi.fetchStats(item.path, item.publishedDate, sd)
+      .then((statssnapshot) => {
+        return Promise.resolve(buildSnapshot(statssnapshot, item));
+      })
+      .then((snapshot) => {
+        if (st === '24hr') {
+          item.snapshot24Hours = snapshot;
+        } else if (st === 'week') {
+          item.snapshot7Days = snapshot;
+        }
+        return Promise.resolve(item);
+      })
+      .then((item) => {
+        if (item.inNewspaper === true) {
+          return Promise.resolve(item);
+        }
+        
+        return trackerApi.fetchFullTrackerData(item.composerId)
+          .then((trackerData) => {            
+            return Object.assign({}, item, {
+              inNewspaper: trackerData.inNewspaper
+            })
+          })
+      })
+      .then(saveItem)
+      .catch((err) => {
+        console.log("Error fetching snapshot for ", item.path)
+      });
   }
 }
 
@@ -153,7 +166,7 @@ function addTrackerDataToItem(item) {
       saveItem(newItem);
     })
     .catch((err) => {
-      console.log("Error fetching full tracker information", err);
+      console.log("Error fetching full tracker information", item.path);
     })
 }
 
