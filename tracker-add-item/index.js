@@ -116,6 +116,8 @@ function insertIntoDynamo(contentRecord, interestingCommissioningDesks) {
 
 exports.handler = function(event, context) {
   
+  console.log("Starting, with " + event.Records.length + " records to check");
+  
   getConfig('commissioningDesks').then((commissioningDesks => {
     event.Records
       .map(deserialiseKinesisRecord)
