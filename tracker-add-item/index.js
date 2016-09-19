@@ -52,9 +52,15 @@ function isPublishedInLastWeek(publishedDate) {
 }
 
 function getCommissioningDesks(content, interestingCommissioningDesks) {
-  return content.taxonomy.tags.filter((tagUsage) => {
+  var legacyDeskTags = content.taxonomy.tags.filter((tagUsage) => {
     return tagUsage.tag.path && interestingCommissioningDesks.indexOf(tagUsage.tag.path) !== -1
   }).map((tagUsage) => tagUsage.tag.path);
+
+  var currentDeskTags = content.taxonomy.tracking ? content.taxonomy.tracking.filter((tag) => {
+    return tag.path && interestingCommissioningDesks.indexOf(tag.path) !== -1
+  }).map((tag) => tag.path) : [];
+
+  return legacyDeskTags.concat(currentDeskTags);
 }
 
 function isCommissioningDeskOfInterest(content, interestingCommissioningDesks) {

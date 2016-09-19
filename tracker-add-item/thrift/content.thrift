@@ -1179,6 +1179,10 @@ struct Taxonomy {
 
     /** The external references applied to this content */
     5: optional list<Reference> references
+
+    /** The tracking tags */
+    6: optional list<Tag> tracking
+
 }
 
 /**
