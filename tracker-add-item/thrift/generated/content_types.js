@@ -6542,6 +6542,7 @@ Taxonomy = module.exports.Taxonomy = function(args) {
   this.publication = null;
   this.newspaper = null;
   this.references = null;
+  this.tracking = null;
   if (args) {
     if (args.tags !== undefined && args.tags !== null) {
       this.tags = Thrift.copyList(args.tags, [ttypes.TagUsage]);
@@ -6557,6 +6558,9 @@ Taxonomy = module.exports.Taxonomy = function(args) {
     }
     if (args.references !== undefined && args.references !== null) {
       this.references = Thrift.copyList(args.references, [ttypes.Reference]);
+    }
+    if (args.tracking !== undefined && args.tracking !== null) {
+      this.tracking = Thrift.copyList(args.tracking, [ttypes.Tag]);
     }
   }
 };
@@ -6653,6 +6657,27 @@ Taxonomy.prototype.read = function(input) {
         input.skip(ftype);
       }
       break;
+      case 6:
+      if (ftype == Thrift.Type.LIST) {
+        var _size53 = 0;
+        var _rtmp357;
+        this.tracking = [];
+        var _etype56 = 0;
+        _rtmp357 = input.readListBegin();
+        _etype56 = _rtmp357.etype;
+        _size53 = _rtmp357.size;
+        for (var _i58 = 0; _i58 < _size53; ++_i58)
+        {
+          var elem59 = null;
+          elem59 = new ttypes.Tag();
+          elem59.read(input);
+          this.tracking.push(elem59);
+        }
+        input.readListEnd();
+      } else {
+        input.skip(ftype);
+      }
+      break;
       default:
         input.skip(ftype);
     }
@@ -6667,12 +6692,12 @@ Taxonomy.prototype.write = function(output) {
   if (this.tags !== null && this.tags !== undefined) {
     output.writeFieldBegin('tags', Thrift.Type.LIST, 1);
     output.writeListBegin(Thrift.Type.STRUCT, this.tags.length);
-    for (var iter53 in this.tags)
+    for (var iter60 in this.tags)
     {
-      if (this.tags.hasOwnProperty(iter53))
+      if (this.tags.hasOwnProperty(iter60))
       {
-        iter53 = this.tags[iter53];
-        iter53.write(output);
+        iter60 = this.tags[iter60];
+        iter60.write(output);
       }
     }
     output.writeListEnd();
@@ -6681,12 +6706,12 @@ Taxonomy.prototype.write = function(output) {
   if (this.contributors !== null && this.contributors !== undefined) {
     output.writeFieldBegin('contributors', Thrift.Type.LIST, 2);
     output.writeListBegin(Thrift.Type.STRUCT, this.contributors.length);
-    for (var iter54 in this.contributors)
+    for (var iter61 in this.contributors)
     {
-      if (this.contributors.hasOwnProperty(iter54))
+      if (this.contributors.hasOwnProperty(iter61))
       {
-        iter54 = this.contributors[iter54];
-        iter54.write(output);
+        iter61 = this.contributors[iter61];
+        iter61.write(output);
       }
     }
     output.writeListEnd();
@@ -6705,12 +6730,26 @@ Taxonomy.prototype.write = function(output) {
   if (this.references !== null && this.references !== undefined) {
     output.writeFieldBegin('references', Thrift.Type.LIST, 5);
     output.writeListBegin(Thrift.Type.STRUCT, this.references.length);
-    for (var iter55 in this.references)
+    for (var iter62 in this.references)
     {
-      if (this.references.hasOwnProperty(iter55))
+      if (this.references.hasOwnProperty(iter62))
       {
-        iter55 = this.references[iter55];
-        iter55.write(output);
+        iter62 = this.references[iter62];
+        iter62.write(output);
+      }
+    }
+    output.writeListEnd();
+    output.writeFieldEnd();
+  }
+  if (this.tracking !== null && this.tracking !== undefined) {
+    output.writeFieldBegin('tracking', Thrift.Type.LIST, 6);
+    output.writeListBegin(Thrift.Type.STRUCT, this.tracking.length);
+    for (var iter63 in this.tracking)
+    {
+      if (this.tracking.hasOwnProperty(iter63))
+      {
+        iter63 = this.tracking[iter63];
+        iter63.write(output);
       }
     }
     output.writeListEnd();
@@ -7209,19 +7248,19 @@ Content.prototype.read = function(input) {
       break;
       case 10:
       if (ftype == Thrift.Type.LIST) {
-        var _size56 = 0;
-        var _rtmp360;
+        var _size64 = 0;
+        var _rtmp368;
         this.blocks = [];
-        var _etype59 = 0;
-        _rtmp360 = input.readListBegin();
-        _etype59 = _rtmp360.etype;
-        _size56 = _rtmp360.size;
-        for (var _i61 = 0; _i61 < _size56; ++_i61)
+        var _etype67 = 0;
+        _rtmp368 = input.readListBegin();
+        _etype67 = _rtmp368.etype;
+        _size64 = _rtmp368.size;
+        for (var _i69 = 0; _i69 < _size64; ++_i69)
         {
-          var elem62 = null;
-          elem62 = new ttypes.Block();
-          elem62.read(input);
-          this.blocks.push(elem62);
+          var elem70 = null;
+          elem70 = new ttypes.Block();
+          elem70.read(input);
+          this.blocks.push(elem70);
         }
         input.readListEnd();
       } else {
@@ -7230,19 +7269,19 @@ Content.prototype.read = function(input) {
       break;
       case 11:
       if (ftype == Thrift.Type.LIST) {
-        var _size63 = 0;
-        var _rtmp367;
+        var _size71 = 0;
+        var _rtmp375;
         this.collaborators = [];
-        var _etype66 = 0;
-        _rtmp367 = input.readListBegin();
-        _etype66 = _rtmp367.etype;
-        _size63 = _rtmp367.size;
-        for (var _i68 = 0; _i68 < _size63; ++_i68)
+        var _etype74 = 0;
+        _rtmp375 = input.readListBegin();
+        _etype74 = _rtmp375.etype;
+        _size71 = _rtmp375.size;
+        for (var _i76 = 0; _i76 < _size71; ++_i76)
         {
-          var elem69 = null;
-          elem69 = new ttypes.User();
-          elem69.read(input);
-          this.collaborators.push(elem69);
+          var elem77 = null;
+          elem77 = new ttypes.User();
+          elem77.read(input);
+          this.collaborators.push(elem77);
         }
         input.readListEnd();
       } else {
@@ -7313,19 +7352,19 @@ Content.prototype.read = function(input) {
       break;
       case 20:
       if (ftype == Thrift.Type.LIST) {
-        var _size70 = 0;
-        var _rtmp374;
+        var _size78 = 0;
+        var _rtmp382;
         this.atomIds = [];
-        var _etype73 = 0;
-        _rtmp374 = input.readListBegin();
-        _etype73 = _rtmp374.etype;
-        _size70 = _rtmp374.size;
-        for (var _i75 = 0; _i75 < _size70; ++_i75)
+        var _etype81 = 0;
+        _rtmp382 = input.readListBegin();
+        _etype81 = _rtmp382.etype;
+        _size78 = _rtmp382.size;
+        for (var _i83 = 0; _i83 < _size78; ++_i83)
         {
-          var elem76 = null;
-          elem76 = new ttypes.AtomID();
-          elem76.read(input);
-          this.atomIds.push(elem76);
+          var elem84 = null;
+          elem84 = new ttypes.AtomID();
+          elem84.read(input);
+          this.atomIds.push(elem84);
         }
         input.readListEnd();
       } else {
@@ -7391,12 +7430,12 @@ Content.prototype.write = function(output) {
   if (this.blocks !== null && this.blocks !== undefined) {
     output.writeFieldBegin('blocks', Thrift.Type.LIST, 10);
     output.writeListBegin(Thrift.Type.STRUCT, this.blocks.length);
-    for (var iter77 in this.blocks)
+    for (var iter85 in this.blocks)
     {
-      if (this.blocks.hasOwnProperty(iter77))
+      if (this.blocks.hasOwnProperty(iter85))
       {
-        iter77 = this.blocks[iter77];
-        iter77.write(output);
+        iter85 = this.blocks[iter85];
+        iter85.write(output);
       }
     }
     output.writeListEnd();
@@ -7405,12 +7444,12 @@ Content.prototype.write = function(output) {
   if (this.collaborators !== null && this.collaborators !== undefined) {
     output.writeFieldBegin('collaborators', Thrift.Type.LIST, 11);
     output.writeListBegin(Thrift.Type.STRUCT, this.collaborators.length);
-    for (var iter78 in this.collaborators)
+    for (var iter86 in this.collaborators)
     {
-      if (this.collaborators.hasOwnProperty(iter78))
+      if (this.collaborators.hasOwnProperty(iter86))
       {
-        iter78 = this.collaborators[iter78];
-        iter78.write(output);
+        iter86 = this.collaborators[iter86];
+        iter86.write(output);
       }
     }
     output.writeListEnd();
@@ -7459,12 +7498,12 @@ Content.prototype.write = function(output) {
   if (this.atomIds !== null && this.atomIds !== undefined) {
     output.writeFieldBegin('atomIds', Thrift.Type.LIST, 20);
     output.writeListBegin(Thrift.Type.STRUCT, this.atomIds.length);
-    for (var iter79 in this.atomIds)
+    for (var iter87 in this.atomIds)
     {
-      if (this.atomIds.hasOwnProperty(iter79))
+      if (this.atomIds.hasOwnProperty(iter87))
       {
-        iter79 = this.atomIds[iter79];
-        iter79.write(output);
+        iter87 = this.atomIds[iter87];
+        iter87.write(output);
       }
     }
     output.writeListEnd();
